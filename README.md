@@ -6,12 +6,30 @@ editor_options:
 
 # Meeting Minutes
 
+## November 18, 2025
+
+**Agenda:**
+
+-   Go over Aim 2 analysis results
+
+    -   Taxonomic bar plot
+
+    -   Alpha & beta diversity
+
+    -   Core microbiome
+
+    -   Indicator species
+
+    -   Functional analysis – lack of significance (again)
+
+    -   Lack of heatmap
+
 ## November 12, 2025
 
 **Agenda:**
 
 -   Go over Aim 1 analysis results
-    -   Taxanomic bar plot
+    -   Taxonomic bar plot
     -   Alpha & beta diversity
     -   Core microbiome – some overlap b/tw HNDR and HLI
     -   Indicator species – no significant species b/tw HNDR and HLI
