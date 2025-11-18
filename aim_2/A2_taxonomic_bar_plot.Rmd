@@ -65,5 +65,5 @@ plot_avg = avg_modified %>%
 plot_avg
 
 # Saving plot
-#ggsave('Aim 2 - Grouped Bar Plots.jpeg', plot = plot_avg, height=8, width = 6)
+ggsave('Aim 2 - Grouped Bar Plots (Genus).jpeg', plot = plot_avg, height=8, width = 6)
 ```
