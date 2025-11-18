@@ -12,7 +12,7 @@ library(microbiome)
 library(ggVennDiagram)
 
 # Load object
-ps = readRDS('../datasets/ps_taxonomy.rds')
+ps = readRDS('../../datasets/ps_taxonomy.rds')
 
 # Filter for healthy controls
 ps_control = subset_samples(ps, disease == "Control")
@@ -41,7 +41,7 @@ core_plot = ggVennDiagram(x = list(HNDR_core, HLI_core),
 core_plot
 
 # Save core microbiome plot
-ggsave('Aim 1 - Core Microbiome Plot.jpeg',
+ggsave('../outputs/Aim 1 - Core Microbiome Plot.jpeg',
        plot = core_plot,
        height = 7, width = 12)
 ```
