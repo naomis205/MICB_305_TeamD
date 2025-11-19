@@ -14,7 +14,7 @@ editor_options:
 
     -   Taxonomic bar plot
 
-    -   Alpha & beta diversity
+    -   Alpha & beta diversity – no significance
 
     -   Core microbiome – 1 significant taxa per group
 
@@ -26,6 +26,41 @@ editor_options:
     -   Lack of heatmap
 
 -   Map out future analysis direction for Aim 3
+
+    -   **Action item (Yoshier):** Survey all unused metrics for alpha
+        and beta diversity for Aims 1 and 2 (e.g. Faith, observed, etc.)
+
+    -   **Action item (Naomi):** Perform differential abundance for
+        Lactobacillus and Bifidobacterium (due to association with LI)
+
+        -   Perform both traditional & filtered differential abundance
+
+            -   Filtered:
+
+                -   Run ANCOM to filter only for 2 genus
+
+                -   No need to use adjusted p-value b/c picking out 2
+                    genus from past literature
+
+        -   Plot abundance across 4 groups (HNDR, HLI, MSNDR, MSLI)
+
+    -   **Action item (Kaitlyn):** Work on draft PowerPoint by next
+        meeting
+
+        -   Can organize by Aim
+
+    -   **Final Paper**
+
+        -   Report non-significant results
+
+        -   Use Phylum grouped taxa bar plot
+
+            -   Bifidobacterium – Actinomycetota
+
+            -   Lactobacillus – Bacillota
+
+        -   Discuss how results fits into grand scheme of previous
+            literature
 
 ## November 12, 2025
 
