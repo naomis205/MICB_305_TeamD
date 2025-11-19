@@ -11,7 +11,7 @@ library(vegan)
 library(ggpubr)
 
 # Load object
-ps = readRDS('../datasets/ps_taxonomy.rds')
+ps = readRDS('../../datasets/ps_taxonomy.rds')
 
 # Rarefy to chosen sequencing depth
 psrare = ps %>% 
@@ -27,7 +27,7 @@ table(sample_sums(psrare_control))
 # Calculate Shannon index alpha diversity
 set.seed(421)
 p = plot_richness(psrare_control, x = 'LI_status', 
-                  measures = c('Shannon'),
+                  measures = c('Shannon', 'Observed'),
                   color = 'LI_status')
 p
 
@@ -47,7 +47,7 @@ p_formatted = pdata %>% ggplot(aes(LI_status,value,fill = LI_status)) +
 p_formatted
 
 # Add a Wilcoxon test directly to the plot using stat_compare_means().
-comparisons = list( c('LI','No_LI'))
+comparisons = list(c('LI','No_LI'))
 
 p_formatted_new = p_formatted +
   stat_compare_means(comparisons = comparisons, method='wilcox.test', size=6) +
@@ -55,6 +55,29 @@ p_formatted_new = p_formatted +
 p_formatted_new
 
 # Saving plot
-ggsave('Aim 1 - Alpha Diversity.jpeg', plot = p_formatted_new, height=5,width=7)
+# ggsave('Aim 1 - Alpha Diversity.jpeg', plot = p_formatted_new, height=5,width=7)
+
+```
+
+```{r Faith PD}
+# install.packages("microbiome")
+library(microbiome)
+
+faith_pd_df <- microbiome::estimate_pd(psrare_control) %>%
+  rownames_to_column("SampleID")
+
+# Combine with metadata
+alpha_df <- data.frame(sample_data(psrare_control)) %>%
+  rownames_to_column("SampleID") %>%
+  left_join(faith_pd_df, by = "SampleID")
+
+# View the first few rows
+head(alpha_df)
+
+# Plot
+ggplot(alpha_df, aes(x = LI_status, y = PD, fill = LI_status)) +
+  geom_boxplot(outlier.shape = NA) +
+  theme_classic() +
+  stat_compare_means(method = "wilcox.test")
 
 ```
