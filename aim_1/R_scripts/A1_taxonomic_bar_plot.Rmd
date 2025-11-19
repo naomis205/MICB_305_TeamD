@@ -1,0 +1,69 @@
+---
+title: "A1_taxonomic_bar_plot"
+output: html_document
+date: "2025-11-11"
+---
+
+```{r Load data and libraries}
+library(tidyverse)
+library(dplyr)
+library(phyloseq)
+
+# Load object
+ps = readRDS('../../datasets/ps_taxonomy.rds')
+
+# Filter for healthy controls
+ps_control = subset_samples(ps, disease == "Control")
+
+# Make a phylum-level plot
+ps_phylum = tax_glom(ps_control,'Phylum')
+
+# Transform to relative abundance and melt for ggplot (phylum)
+rel_ab <- ps_phylum %>%
+  microbiome::transform("compositional") %>%
+  psmelt()
+
+```
+
+```{r Calculating Abundance}
+# Calculate total and average abundance per phylum
+sum_of_each_phylum = taxa_sums(ps_phylum)
+avg_of_each_phylum = sum_of_each_phylum/sum(sum_of_each_phylum)
+
+# Find which ones are <1% (phylum)
+below_1 = avg_of_each_phylum[avg_of_each_phylum<0.01]
+to_change = names(below_1)
+to_change
+
+# Change the phylum name of these ones to '<1%'
+rel_ab_modified = rel_ab
+unique(rel_ab_modified$Phylum)
+rel_ab_modified$Phylum[rel_ab_modified$OTU %in% to_change] = '<1%'
+unique(rel_ab_modified$Phylum)
+
+```
+
+```{r Grouped Taxonomic Bar Plot}
+# Find the average abundance for each phylum within LI status
+averaged = rel_ab %>% 
+  group_by(OTU,Phylum,LI_status) %>% 
+  summarize(Abundance = mean(Abundance)) %>% 
+  ungroup()
+
+# Combine those under 1% (phylum)
+avg_modified = averaged
+avg_modified$Phylum[avg_modified$OTU %in% to_change] = '<1%'
+
+# Phylum level plot
+plot_avg = avg_modified %>% 
+  ggplot(aes(LI_status,Abundance,fill=Phylum)) +
+  geom_col(position='stack') +
+  theme_classic(base_size=18) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  xlab(NULL)
+plot_avg
+
+# Saving plot
+ggsave('../outputs/Aim 1 - Grouped Bar Plots (Phylum).jpeg', plot = plot_avg, height=8, width = 6)
+
+```
