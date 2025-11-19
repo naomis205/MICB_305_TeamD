@@ -16,13 +16,16 @@ editor_options:
 
     -   Alpha & beta diversity
 
-    -   Core microbiome
+    -   Core microbiome – 1 significant taxa per group
 
-    -   Indicator species
+    -   Indicator species – no significant stat \> 0.7, some p-values \<
+        0.05
 
     -   Functional analysis – lack of significance (again)
 
     -   Lack of heatmap
+
+-   Map out future analysis direction for Aim 3
 
 ## November 12, 2025
 
