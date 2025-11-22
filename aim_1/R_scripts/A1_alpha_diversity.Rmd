@@ -23,8 +23,8 @@ table(sample_sums(psrare_control))
 
 ```
 
-```{r Alpha Diversity}
-# Calculate Shannon index alpha diversity
+```{r Alpha Diversity Using Shannon, Observed}
+# Calculate Shannon index, Observed alpha diversity
 set.seed(421)
 p = plot_richness(psrare_control, x = 'LI_status', 
                   measures = c('Shannon', 'Observed'),
@@ -55,29 +55,38 @@ p_formatted_new = p_formatted +
 p_formatted_new
 
 # Saving plot
-# ggsave('Aim 1 - Alpha Diversity.jpeg', plot = p_formatted_new, height=5,width=7)
+# ggsave('../outputs/Aim 1 - Alpha Diversity (Shannon,Observed).jpeg', plot = p_formatted_new, height=5,width=7)
 
 ```
 
 ```{r Faith PD}
-# install.packages("microbiome")
-library(microbiome)
+library(picante)
 
-faith_pd_df <- microbiome::estimate_pd(psrare_control) %>%
-  rownames_to_column("SampleID")
+# Calculate Faith PD
+phylo_dist <- pd(t(otu_table(psrare_control)), phy_tree(psrare_control), include.root = FALSE)
 
-# Combine with metadata
-alpha_df <- data.frame(sample_data(psrare_control)) %>%
-  rownames_to_column("SampleID") %>%
-  left_join(faith_pd_df, by = "SampleID")
+# Add PD to metadata table 
+sample_data(psrare_control)$PD <- phylo_dist$PD
 
-# View the first few rows
-head(alpha_df)
+# Plot Faith PD
+faith_pd_plot <- ggplot(sample_data(psrare_control), aes(LI_status, PD,fill = LI_status)) +
+  geom_boxplot(outlier.shape = NA) + 
+  theme_classic(base_size=12) +
+  labs(title = "Faith's Phylogenetic Diversity") +
+  ylab('Faith PD') + 
+  xlab(NULL) +
+  theme(axis.text.x = element_text(angle = 45,vjust=1,hjust=1))+
+  labs(fill='LI Status')
+faith_pd_plot
 
-# Plot
-ggplot(alpha_df, aes(x = LI_status, y = PD, fill = LI_status)) +
-  geom_boxplot(outlier.shape = NA) +
-  theme_classic() +
-  stat_compare_means(method = "wilcox.test")
+# Add a Wilcoxon test directly to the plot using stat_compare_means().
+comparisons = list(c('LI','No_LI'))
+
+p_formatted_faith = faith_pd_plot +
+  stat_compare_means(comparisons = comparisons, method='wilcox.test', size=6) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, .1)))
+p_formatted_faith
+
+# ggsave('../outputs/Aim 1 - Alpha Diversity (FaithPD).jpeg', plot = p_formatted_faith, height=5,width=7)
 
 ```
