@@ -11,7 +11,7 @@ library(vegan)
 library(ggpubr)
 
 # Load object
-ps = readRDS('../datasets/ps_taxonomy.rds')
+ps = readRDS('../../datasets/ps_taxonomy.rds')
 
 # Rarefy to chosen sequencing depth
 psrare = ps %>% 
@@ -23,11 +23,11 @@ table(sample_sums(psrare_MS))
 
 ```
 
-```{r r Alpha Diversity}
-# Calculate Shannon index alpha diversity
+```{r Alpha Diversity Using Shannon, Observed}
+# Calculate Shannon index, Observed alpha diversity
 set.seed(421)
 p = plot_richness(psrare_MS, x = 'LI_status', 
-                  measures = c('Shannon'),
+                  measures = c('Shannon', 'Observed'),
                   color = 'LI_status')
 p
 
@@ -55,6 +55,38 @@ p_formatted_new = p_formatted +
 p_formatted_new
 
 # Saving plot
-ggsave('Aim 2 - Alpha Diversity.jpeg', plot = p_formatted_new, height=5,width=7)
+ggsave('../outputs/Aim 2 - Alpha Diversity (Shannon,Observed).jpeg', plot = p_formatted_new, height=5,width=7)
+
+```
+
+```{r Faith PD}
+library(picante)
+
+# Calculate Faith PD
+phylo_dist <- pd(t(otu_table(psrare_MS)), phy_tree(psrare_MS), include.root = FALSE)
+
+# Add PD to metadata table 
+sample_data(psrare_MS)$PD <- phylo_dist$PD
+
+# Plot Faith PD
+faith_pd_plot <- ggplot(sample_data(psrare_MS), aes(LI_status, PD,fill = LI_status)) +
+  geom_boxplot(outlier.shape = NA) + 
+  theme_classic(base_size=12) +
+  labs(title = "Faith's Phylogenetic Diversity") +
+  ylab('Faith PD') + 
+  xlab(NULL) +
+  theme(axis.text.x = element_text(angle = 45,vjust=1,hjust=1))+
+  labs(fill='LI Status')
+faith_pd_plot
+
+# Add a Wilcoxon test directly to the plot using stat_compare_means().
+comparisons = list(c('LI','No_LI'))
+
+p_formatted_faith = faith_pd_plot +
+  stat_compare_means(comparisons = comparisons, method='wilcox.test', size=6) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, .1)))
+p_formatted_faith
+
+ggsave('../outputs/Aim 2 - Alpha Diversity (FaithPD).jpeg', plot = p_formatted_faith, height=5,width=7)
 
 ```

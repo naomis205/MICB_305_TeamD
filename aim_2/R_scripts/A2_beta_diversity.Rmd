@@ -10,7 +10,7 @@ library(phyloseq)
 library(vegan)
 
 # Load object
-ps = readRDS('../datasets/ps_taxonomy.rds')
+ps = readRDS('../../datasets/ps_taxonomy.rds')
 
 # Rarefy the data 
 psrare = ps %>% 
@@ -21,7 +21,7 @@ ps_MS = subset_samples(psrare, disease == "MS")
 
 ```
 
-```{r Calculating Beta Diversity}
+```{r Calculating Beta Diversity using Bray-Curtis}
 # Calculate the distance between each sample pair
 ps_bray = phyloseq::distance(ps_MS, method = "bray")
 View(as.matrix(ps_bray))
@@ -35,9 +35,6 @@ mds_data = mds$points %>% as.data.frame %>%
   merge(sample_data(ps_MS), by='row.names', sort=F)
 head(mds_data)
 
-```
-
-```{r Plotting Beta Diversity}
 # Plotting Beta Diversity plot
 p = mds_data %>%
   ggplot(aes(MDS1,MDS2,color = LI_status)) +
@@ -50,9 +47,73 @@ p
 stats = adonis2(ps_bray ~ LI_status, data = mds_data)
 
 # Saving plot
-ggsave('Aim 2 - Beta Diversity.jpeg', plot = p, height=5,width=7)
+# ggsave('Aim 2 - Beta Diversity (Bray-Curtis).jpeg', plot = p, height=5,width=7)
 
 # Save statistics as an Excel file
-writexl::write_xlsx(list('Beta Diversity' = stats), 'Aim 2 - Beta Diversity Stats.xlsx')
+# writexl::write_xlsx(list('Beta Diversity' = stats), '../outputs/Aim 2 - Beta Diversity (Bray-Curtis) Stats.xlsx')
 ```
 
+```{r Calculating Beta Diversity using Weighted Unifrac}
+# Calculate the distance between each sample pair
+ps_wunifrac = phyloseq::distance(ps_MS, method = "wunifrac")
+View(as.matrix(ps_wunifrac))
+
+# MDS scaling
+set.seed(421)
+mds_w = metaMDS(ps_wunifrac)
+
+# Extract data
+mds_data_w = mds_w$points %>% as.data.frame %>%
+  merge(sample_data(ps_MS), by='row.names', sort=F)
+head(mds_data_w)
+
+# Plotting Beta Diversity plot
+plot_wunifrac = mds_data_w %>%
+  ggplot(aes(MDS1,MDS2,color = LI_status)) +
+  geom_point(alpha = 0.5) +
+  stat_ellipse() +
+  theme_classic(base_size=16)
+plot_wunifrac
+
+# PERMANOVA Statistics
+stats_wunifrac = adonis2(ps_wunifrac ~ LI_status, data = mds_data_w)
+
+# Saving plot
+# ggsave('../outputs/Aim 2 - Beta Diversity (Weighted Unifrac).jpeg', plot = plot_wunifrac, height=8,width=15)
+
+# Save statistics as an Excel file
+# writexl::write_xlsx(list('Beta Diversity' = stats_wunifrac), '../outputs/Aim 2 - Beta Diversity (Weighted Unifrac) Stats.xlsx')
+```
+
+```{r Calculating Beta Diversity using Unweighted Unifrac}
+# Calculate the distance between each sample pair
+ps_unifrac = phyloseq::distance(ps_MS, method = "unifrac")
+View(as.matrix(ps_unifrac))
+
+# MDS scaling
+set.seed(421)
+mds_u = metaMDS(ps_unifrac)
+
+# Extract data
+mds_data_u = mds_u$points %>% as.data.frame %>%
+  merge(sample_data(ps_MS), by='row.names', sort=F)
+head(mds_data_u)
+
+# Plotting Beta Diversity plot
+plot_unifrac = mds_data_u %>%
+  ggplot(aes(MDS1,MDS2,color = LI_status)) +
+  geom_point(alpha = 0.5) +
+  stat_ellipse() +
+  theme_classic(base_size=16)
+plot_unifrac
+
+# PERMANOVA Statistics
+stats_unifrac = adonis2(ps_unifrac ~ LI_status, data = mds_data_u)
+
+# Saving plot
+# ggsave('../outputs/Aim 2 - Beta Diversity (Unweighted Unifrac).jpeg', plot = plot_unifrac, height=7,width=9)
+
+# Save statistics as an Excel file
+# writexl::write_xlsx(list('Beta Diversity' = stats_unifrac), '../outputs/Aim 2 - Beta Diversity (Unweighted Unifrac) Stats.xlsx')
+
+```
