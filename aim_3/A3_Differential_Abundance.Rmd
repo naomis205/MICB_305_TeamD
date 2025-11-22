@@ -1,0 +1,18 @@
+---
+title: "A3_Differential_Abundance"
+output: html_document
+---
+
+### Tasks performed:
+
+-   For Lactobacillus and Bifidobacterium:
+
+    -   Traditional differential abundance
+
+    -   Filtered differential abundance
+
+        -   ANCOM w/out adjusted p-value
+
+    -   Plotting:
+
+        -   Abundance across HNDR, MSNDR, HLI, MSLI
