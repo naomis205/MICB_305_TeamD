@@ -5,14 +5,69 @@ output: html_document
 
 ### Tasks performed:
 
--   For Lactobacillus and Bifidobacterium:
+-   Traditional differential abundance
 
-    -   Traditional differential abundance
+-   Filtered differential abundance
 
-    -   Filtered differential abundance
+    -   Filter ASVs for only g_Lactobacillus and g_Bifidobacterium
 
-        -   ANCOM w/out adjusted p-value
+    -   ANCOM w/out adjusted p-value
 
-    -   Plotting:
+-   Plotting:
 
-        -   Abundance across HNDR, MSNDR, HLI, MSLI
+    -   Abundance across HNDR, MSNDR, HLI, MSLI
+
+```{r Loading Libraries & Data}
+
+# Biocmanager::install("ANCOMBC")
+library(tidyverse)
+library(ANCOMBC)
+library(phyloseq)
+
+ps <- readRDS("../datasets/ps_taxonomy.rds")
+```
+
+```{r Traditional Differential Abundance}
+# Set seed:
+set.seed(123)
+
+# Tax_glom to genus level
+# ps_glom = tax_glom(ps, 'Genus')
+# saveRDS(ps_glom, file = "../datasets/ps_glom_genus.rds")
+ps_glom <- readRDS("../datasets/ps_glom_genus.rds")
+
+# Transforming sample_data levels to factors:
+
+sample_data(ps_glom)$disease <- factor(sample_data(ps_glom)$disease,
+                                       levels = c("MS", "Control"))
+
+sample_data(ps_glom)$LI_status <- factor(sample_data(ps_glom)$LI_status,
+                                       levels = c("No_LI", "LI"))
+
+# ANCOMBC2
+trad_ancom2 = ancombc2(data = ps_glom,
+                       fix_formula = 'LI_status + disease',
+                       p_adj_method = 'BH',
+                       prv_cut = 0.1,
+                      rank = "Genus")
+
+trad_ancom_table2 = trad_ancom2$res
+
+# writexl::write_xlsx(trad_ancom_table,'../datasets/Traditional ANCOM2 Stat Table.xlsx')
+```
+
+```{r Plotting}
+
+# Filter stats to only include taxa that are differentially abundant between
+taxa_to_plot = trad_ancom_table %>% 
+  filter(diff_robust_diseaseMS==T) 
+
+# Plot the log 2 fold changes
+# Note: you'll have to figure out how to plot the genera names instead of the
+# representative ASV names!
+taxa_to_plot %>%
+  ggplot(aes(taxon,lfc_diseaseMS)) +
+  geom_col() +
+  coord_flip()
+
+```
