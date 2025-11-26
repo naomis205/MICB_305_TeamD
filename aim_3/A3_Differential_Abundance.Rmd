@@ -23,9 +23,14 @@ output: html_document
 library(tidyverse)
 library(ANCOMBC)
 library(phyloseq)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 
 ps <- readRDS("../datasets/ps_taxonomy.rds")
 ```
+
+# Part 1: "Traditional" ANCOMBC2
 
 ```{r Traditional Differential Abundance}
 # Set seed:
@@ -36,38 +41,151 @@ set.seed(123)
 # saveRDS(ps_glom, file = "../datasets/ps_glom_genus.rds")
 ps_glom <- readRDS("../datasets/ps_glom_genus.rds")
 
-# Transforming sample_data levels to factors:
 
-sample_data(ps_glom)$disease <- factor(sample_data(ps_glom)$disease,
-                                       levels = c("MS", "Control"))
+# Creating groups, and transforming them into factors:
+sample_data(ps_glom)$Group <- with(sample_data(ps_glom),
+                                   ifelse(disease == "Control" & LI_status == "No_LI", "HNDR",
+                                   ifelse(disease == "Control" & LI_status == "LI", "HLI",
+                                   ifelse(disease == "MS" & LI_status == "No_LI", "MSNDR",
+                                          "MSLI"))))
 
-sample_data(ps_glom)$LI_status <- factor(sample_data(ps_glom)$LI_status,
-                                       levels = c("No_LI", "LI"))
+sample_data(ps_glom)$Group <- factor(sample_data(ps_glom)$Group,
+                                     levels = c("HNDR", "HLI", "MSNDR", "MSLI"))
 
-# ANCOMBC2
-trad_ancom2 = ancombc2(data = ps_glom,
-                       fix_formula = 'LI_status + disease',
-                       p_adj_method = 'BH',
-                       prv_cut = 0.1,
-                      rank = "Genus")
+# Perform ANCOMBC2
+trad_out <- ancombc2(
+  data = ps_glom,
+  fix_formula = "Group",
+  p_adj_method = "BH",
+  prv_cut = 0.10,
+  group = "Group")
 
-trad_ancom_table2 = trad_ancom2$res
 
-# writexl::write_xlsx(trad_ancom_table,'../datasets/Traditional ANCOM2 Stat Table.xlsx')
+# Save results as object
+trad_res <- trad_out$res
+
+
+# Adding genus names to trad_res for preparing publication-ready plots
+ps_tax <- data.frame(ps_glom@tax_table)
+
+tax_names <- data.frame(taxon = row.names(ps_tax), Genus = ps_tax$Genus)
+
+trad_res_named <- trad_res %>%
+  left_join(tax_names) %>%
+  mutate(Genus = ifelse(is.na(Genus), taxon, Genus))
+
+
+# Filtering for taxa that passed diff_robust in any interest group
+trad_res_pass <- trad_res_named %>%
+  filter(if_any(contains("diff_robust"), ~ . == TRUE))
 ```
 
-```{r Plotting}
+```{r Plotting Traditional Differential Abundance}
 
-# Filter stats to only include taxa that are differentially abundant between
-taxa_to_plot = trad_ancom_table %>% 
-  filter(diff_robust_diseaseMS==T) 
+# Selecting only columns containing lfc values, and rearranging results df for plotting
+# Pivoting longer to prepare for facet_wrap()
+lfc_cols <- grep("^lfc_", names(trad_res_pass), value = TRUE)
 
-# Plot the log 2 fold changes
-# Note: you'll have to figure out how to plot the genera names instead of the
-# representative ASV names!
-taxa_to_plot %>%
-  ggplot(aes(taxon,lfc_diseaseMS)) +
+df_lfc <- trad_res_pass %>%
+  select(Genus, all_of(lfc_cols)) %>%
+  pivot_longer(cols = all_of(lfc_cols),
+               names_to = "Group",
+               values_to = "LFC") %>%
+  mutate(Group = case_when(str_detect(Group, "(Intercept)") == T ~ "HNDR",
+                           str_detect(Group, "HLI") == T ~ "HLI",
+                           str_detect(Group, "MSNDR") == T ~ "MSNDR",
+                           str_detect(Group, "MSLI") == T ~ "MSLI"))  # clean names
+
+
+### Generating the plot ###
+
+trad_ancom_plot <- ggplot(df_lfc, aes(x = reorder(Genus, LFC), y = LFC, fill = LFC > 0)) +
   geom_col() +
-  coord_flip()
+  facet_wrap(~ Group, scales = "free_y") +
+  coord_flip() +
+  labs(
+    title = "Log-Fold Change of Genera per Interest Group",
+    x = "Genus",
+    y = "Log Fold Change"
+  ) +
+  theme_bw() +
+  theme(legend.position = "none")
 
+# ggsave("LogFoldChange_ANCOMBC2_AnyGenera.png", 
+#        plot = trad_ancom_plot,
+#        width = 7,
+#        height = 7)
+```
+
+# Part 2: "Filtered" ANCOMBC2
+
+```{r Filtered Differential Abundance}
+
+# Most code from Part 1 can be kept the same. Only the ANCOMBC2 part changes...
+
+filt_out <- ancombc2(
+  data = ps_glom,
+  fix_formula = "Group",
+  prv_cut = 0.1,
+  group = "Group")
+
+
+# Save results as object
+filt_res <- filt_out$res
+
+
+# Adding genus names to filt_res for preparing publication-ready plots
+filt_res_named <- trad_res %>%
+  left_join(tax_names) %>%
+  mutate(Genus = ifelse(is.na(Genus), taxon, Genus))
+
+
+# Filtering for taxa that passed diff_robust in any interest group
+# Filtering for g__Lactobacillus and g__Bifidobacterium specifically
+filt_res_pass <- filt_res_named %>%
+  filter(if_any(contains("diff_robust"), ~ . == TRUE),
+         Genus == "g__Lactobacillus" | Genus == "g__Bifidobacterium") # Hmm... this didn't work...
+
+# Ignoring diff_robust, let's see what we get...
+
+filt_res_specific <- filt_res_named %>%
+  filter(str_detect(Genus, "g__Lactobacillus") == T |
+           str_detect(Genus, "g__Bifidobacterium") == T)
+```
+
+```{r Plotting Filtered Differential Abundance}
+
+# Selecting only columns containing lfc values, and rearranging results df for plotting
+# Pivoting longer to prepare for facet_wrap()
+filt_lfc_cols <- grep("^lfc_", names(filt_res_specific), value = TRUE)
+
+filt_df_lfc <- filt_res_specific %>%
+  select(Genus, all_of(lfc_cols)) %>%
+  pivot_longer(cols = all_of(lfc_cols),
+               names_to = "Group",
+               values_to = "LFC") %>%
+  mutate(Group = case_when(str_detect(Group, "(Intercept)") == T ~ "HNDR",
+                           str_detect(Group, "HLI") == T ~ "HLI",
+                           str_detect(Group, "MSNDR") == T ~ "MSNDR",
+                           str_detect(Group, "MSLI") == T ~ "MSLI"))  # clean names
+
+
+### Generating the plot ###
+
+filt_ancom_plot <- ggplot(filt_df_lfc, aes(x = reorder(Genus, LFC), y = LFC, fill = LFC > 0)) +
+  geom_col() +
+  facet_wrap(~ Group, scales = "free_y") +
+  coord_flip() +
+  labs(
+    title = "Log-Fold Change of Specific Genera per Interest Group",
+    x = "Genus",
+    y = "Log Fold Change"
+  ) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+# ggsave("LogFoldChange_ANCOMBC2_SpecificGenera.png",
+#        plot = filt_ancom_plot,
+#        width = 7,
+#        height = 7)
 ```
