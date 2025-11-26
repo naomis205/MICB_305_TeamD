@@ -6,6 +6,27 @@ editor_options:
 
 # Meeting Minutes
 
+## November 26, 2025
+
+**Agenda:**
+
+-   Analysis results wrap-up & conclusions
+
+    -   Additional alpha & beta diversity metrics (Yoshier)
+
+    -   Differential abundance results & figure (Naomi)
+
+-   Presentation questions
+
+    -   Should hypothesis remain the same?
+
+    -   How to structure Aim 3, given the analysis was not performed?
+
+    -   What figures to present for Aims 1-2, given no significance?
+        Would it be better to generally state no results for Aims 1-2 +
+        brief explanations of some figures (e.g. core microbiome) and
+        focus in on our revised Aim 3?
+
 ## November 18, 2025
 
 **Agenda:**
