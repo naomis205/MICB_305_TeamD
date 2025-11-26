@@ -16,8 +16,8 @@ editor_options:
 
     -   Additional alpha & beta diversity metrics (Yoshier)
 
-        -   Aim 1 alpha: Shannon (sig), FaithPD (no sig), Observed (no
-            sig)
+        -   Aim 1 alpha: Shannon (no sig), FaithPD (no sig), Observed
+            (no sig)
 
         -   Aim 2 alpha: Shannon (no sig), FaithPD (no sig), Observed
             (no sig)
@@ -32,14 +32,62 @@ editor_options:
 
 -   Presentation questions
 
-    -   Should hypothesis remain the same?
-
     -   How to structure Aim 3, given the analysis was not performed?
 
-    -   What figures to present for Aims 1-2, given no significance?
-        Would it be better to generally state no results for Aims 1-2 +
-        brief explanations of some figures (e.g. core microbiome) and
-        focus in on our revised Aim 3?
+        -   Organize by hypothesis (diversity, composition, function)
+
+**Minutes:**
+
+-   Final manuscript figures
+
+    -   Figure 1. No significant difference in alpha diversity 
+
+        -   a) Observed & Shannon healthy
+
+        -   b) Observed & Shannon MS
+
+    -   Figure 2. No significant difference in beta diversity 
+
+        -   a) Bray-Curtis healthy
+
+        -   b) Bray-Curtis MS
+
+    -   Figure 3. Overview of microbiome data
+
+        -   a) Taxa barplot healthy
+
+        -   b) Taxa barplot MS
+
+    -   Figure 4. 
+
+        -   a) Core microbiome healthy
+
+        -   b) Core microbiome MS
+
+    -   Figure 5. No significant functional pathways
+
+        -   a) PCA healthy
+
+        -   b) PCA control 
+
+    -   Figure 6. 
+
+        -   a) ANCOMBC healthy
+
+        -   b) ANCOMBC MS
+
+-   **Action items:**
+
+    -   Finalize presentation slides –\> eliminate extra slides &
+        condense next week
+
+        -   Figures:
+
+            -   Include either alpha or beta diversity 
+
+            -   Taxa + functional together
+
+            -   ANCOMBC
 
 ## November 18, 2025
 
