@@ -12,7 +12,21 @@ editor_options:
 
 -   Analysis results wrap-up & conclusions
 
+    -   Taxa bar plot (phylum level)
+
     -   Additional alpha & beta diversity metrics (Yoshier)
+
+        -   Aim 1 alpha: Shannon (sig), FaithPD (no sig), Observed (no
+            sig)
+
+        -   Aim 2 alpha: Shannon (no sig), FaithPD (no sig), Observed
+            (no sig)
+
+        -   Aim 1 beta: Bray-Curtis (sig), Unweighted (no sig), Weighted
+            (no sig)
+
+        -   Aim 2 beta: Bray-Curtis (no sig), Unweighted (no sig),
+            Weighted (no sig)
 
     -   Differential abundance results & figure (Naomi)
 
