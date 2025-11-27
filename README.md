@@ -42,50 +42,75 @@ editor_options:
 
     -   Figure 1. No significant difference in alpha diversity 
 
-        -   a) Observed & Shannon healthy
+        -   
 
-        -   b) Observed & Shannon MS
+            a)  Observed & Shannon healthy
+
+        -   
+
+            b)  Observed & Shannon MS
 
     -   Figure 2. No significant difference in beta diversity 
 
-        -   a) Bray-Curtis healthy
+        -   
 
-        -   b) Bray-Curtis MS
+            a)  Bray-Curtis healthy
+
+        -   
+
+            b)  Bray-Curtis MS
 
     -   Figure 3. Overview of microbiome data
 
-        -   a) Taxa barplot healthy
+        -   
 
-        -   b) Taxa barplot MS
+            a)  Taxa barplot healthy
+
+        -   
+
+            b)  Taxa barplot MS
 
     -   Figure 4. 
 
-        -   a) Core microbiome healthy
+        -   
 
-        -   b) Core microbiome MS
+            a)  Core microbiome healthy
+
+        -   
+
+            b)  Core microbiome MS
 
     -   Figure 5. No significant functional pathways
 
-        -   a) PCA healthy
+        -   
 
-        -   b) PCA control 
+            a)  PCA healthy
+
+        -   
+
+            b)  PCA control 
 
     -   Figure 6. 
 
-        -   a) ANCOMBC healthy
+        -   
 
-        -   b) ANCOMBC MS
+            a)  ANCOMBC healthy
+
+        -   
+
+            b)  ANCOMBC MS
 
 -   **Action items:**
 
     -   Finalize presentation slides –\> eliminate extra slides &
-        condense next week
+        condense next week –\> final review during next meeting
 
         -   Figures:
 
             -   Include either alpha or beta diversity 
 
-            -   Taxa + functional together
+            -   Taxa + functional together –\> Color taxa bar plot with
+                a different color
 
             -   ANCOMBC
 
