@@ -63,7 +63,21 @@ plot_avg = avg_modified %>%
   xlab(NULL)
 plot_avg
 
+# Plot with updated colors
+plot_new = plot_avg +
+  scale_fill_manual(
+    values = c(
+      " p__Actinomycetota" = "#FD8867",
+      " p__Bacillota" = "#CF9400",
+      " p__Bacteroidota" = "#00BA42",
+      " p__Pseudomonadota" = "#A6CEE3",
+      " p__Verrucomicrobiota" = "#000000",
+      "<1%" = "#FC61D5"
+    )
+  )
+plot_new
+
 # Saving plot
-ggsave('../outputs/Aim 1 - Grouped Bar Plots (Phylum).jpeg', plot = plot_avg, height=8, width = 6)
+# ggsave('../outputs/Aim 1 - Grouped Bar Plots (Phylum).jpeg', plot = plot_new, height=8, width = 6)
 
 ```
