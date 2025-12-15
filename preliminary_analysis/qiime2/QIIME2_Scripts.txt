@@ -1,0 +1,85 @@
+
+Language: bash
+
+
+
+### GENERATE TABLE.QZV ###
+
+
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux_seqs.qza \
+  --p-trim-left 0 \
+  --p-trunc-len 151 \
+  --o-representative-sequences outputs/rep-seqs.qza \
+  --o-table outputs/table.qza \
+  --o-denoising-stats outputs/stats.qza
+
+qiime metadata tabulate \
+--m-input-file outputs/stats.qza \
+--o-visualization outputs/stats.qzv
+
+qiime feature-table summarize \
+--i-table outputs/table.qza \
+--o-visualization outputs/table.qzv \
+--m-sample-metadata-file /work/MS/corrected_ms_metadata.tsv
+
+qiime feature-table tabulate-seqs \
+--i-data outputs/rep-seqs.qza \
+--o-visualization outputs/rep-seqs.qzv
+
+
+
+### TRAIN CLASSIFIER ###
+
+
+# Trim reads
+qiime feature-classifier extract-reads \
+--i-sequences /datasets/classifiers/silva_ref_files/silva-138-99-seqs.qza \
+--p-f-primer GTGCCAGCMGCCGCGGTAA \
+--p-r-primer GGACTACHVGGGTWTCTAAT \
+--p-trunc-len 151 \
+--o-reads ref-seqs.qza
+
+# Train new classifier
+qiime feature-classifier fit-classifier-naive-bayes \
+  --i-reference-reads ref-seqs.qza \
+  --i-reference-taxonomy /datasets/classifiers/silva_ref_files/silva-138-99-tax.qza \
+  --o-classifier classifier.qza
+
+# Apply to dataset
+qiime feature-classifier classify-sklearn \
+--i-classifier classifier.qza \
+--i-reads outputs/rep-seqs.qza \
+--o-classification outputs/taxonomy.qza
+
+# Filter
+qiime taxa filter-table \
+--i-table table.qza \
+--i-taxonomy taxonomy.qza \
+--p-exclude mitochondria,chloroplast \
+--o-filtered-table table_no_mito_chloro.qza
+
+qiime feature-table filter-samples \
+--i-table table_no_mito_chloro.qza \
+--p-min-frequency 5 \
+--o-filtered-table table_filtered.qza
+
+# Generate alpha rarefaction curve
+qiime phylogeny align-to-tree-mafft-fasttree \
+--i-sequences rep-seqs.qza \
+--o-alignment aligned-rep-seqs.qza \
+--o-masked-alignment masked-aligned-rep-seqs.qza \
+--o-tree unrooted-tree.qza \
+--o-rooted-tree rooted-tree.qza
+
+qiime diversity alpha-rarefaction \
+ --i-table table_filtered.qza \
+ --i-phylogeny rooted-tree.qza \
+ --p-max-depth 34000 \
+ --m-metadata-file /work/MS/corrected_ms_metadata.tsv \
+ --o-visualization alpha-rarefaction.qzv 
+
+qiime feature-table summarize \
+--i-table table_filtered.qza \
+--o-visualization table_filtered.qzv \
+--m-sample-metadata-file /work/MS/corrected_ms_metadata.tsv
