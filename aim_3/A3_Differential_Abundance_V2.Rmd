@@ -132,6 +132,17 @@ ms_res_filt <- ms_res_named %>%
            str_detect(Genus, "Lachnospiraceae") == T |
            str_detect(Genus, "E. hallii") == T |
            str_detect(Genus, "gauvreauii") == T)
+
+# write_tsv(control_res_filt, "control_res_filt.tsv")
+# write_tsv(ms_res_filt, "ms_res_filt.tsv")
+```
+
+```{r Checkpoint}
+
+# Loads results for readjusting plots into being manuscript-ready (for when you really don't want to rerun the above code)
+
+# control_res_filt <- read.delim("control_res_filt.tsv")
+# ms_res_filt <- read.delim("ms_res_filt.tsv")
 ```
 
 ```{r Plotting - Part 1}
@@ -149,7 +160,8 @@ control_lfc <- control_res_filt %>%
                names_to = "Group",
                values_to = "LFC") %>%
   mutate(Group = case_when(str_detect(Group, "GroupHLI") == T ~ "HLI",
-                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)")) %>% filter(str_detect(Group, "HLI") == T)
+                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)"),
+         Genus = str_replace(Genus, "g__", "")) %>% filter(str_detect(Group, "HLI") == T)
 
 ms_lfc <- ms_res_filt %>%
   select(Genus, all_of(filt_lfc_cols_ms)) %>%
@@ -157,16 +169,17 @@ ms_lfc <- ms_res_filt %>%
                names_to = "Group",
                values_to = "LFC") %>%
   mutate(Group = case_when(str_detect(Group, "GroupMSLI") == T ~ "MSLI",
-                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)")) %>% filter(str_detect(Group, "MSLI") == T)
+                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)"),
+        Genus = str_replace(Genus, "g__", "")) %>% filter(str_detect(Group, "MSLI") == T)
 
 
 ### Generating the plot(s) ###
 
 control_plot <- ggplot(control_lfc, 
                        aes(x = reorder(Genus, LFC), 
-                           y = LFC, fill = LFC > 0)) +
+                           y = LFC, fill = LFC > 0,
+                           size = 10)) +
   geom_col() +
-  facet_wrap(~ Group, scales = "free_y") +
   coord_flip() +
   labs(
     title = "Log-Fold Change of Specific Genera for HLI Compared to HNDR",
@@ -174,18 +187,19 @@ control_plot <- ggplot(control_lfc,
     y = "Log Fold Change"
   ) +
   theme_bw() +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16))
 
-# ggsave("LFC - HLI vs. HNDR.png",
+# ggsave("images/LFC - HLI vs. HNDR - V2.png",
 #        plot = control_plot,
-#        width = 8,
-#        height = 7)
+#        width = 12,
+#        height = 10)
 
 ms_plot <- ggplot(ms_lfc, 
                        aes(x = reorder(Genus, LFC), 
                            y = LFC, fill = LFC > 0)) +
   geom_col() +
-  facet_wrap(~ Group, scales = "free_y") +
   coord_flip() +
   labs(
     title = "Log-Fold Change of Specific Genera for MSLI Compared to MSNDR",
@@ -193,12 +207,14 @@ ms_plot <- ggplot(ms_lfc,
     y = "Log Fold Change"
   ) +
   theme_bw() +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16))
 
-# ggsave("LFC - MSLI vs MSNDR.png",
+# ggsave("images/LFC - MSLI vs MSNDR - V2.png",
 #        plot = ms_plot,
-#        width = 8,
-#        height = 7)
+#        width = 12,
+#        height = 10)
 ```
 
 ## Part 2 - ANCOMBC2 Between Groups
@@ -367,3 +383,5 @@ LI_plot <- ggplot(LI_lfc,
 #        width = 8,
 #        height = 7)
 ```
+
+![](images/clipboard-9133593.png)
