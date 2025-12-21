@@ -5,7 +5,7 @@ output: html_document
 
 ## Tasks Performed:
 
--   Adjusting p-values post ANCOMBC2 (A3_Differential_Abundance_V2.Rmd) for within-group comparisons only for *specific* taxa
+-   Adjusting p-values post ANCOMBC2 (Differential_Abundance_V2.Rmd) for within-group comparisons only for *specific* taxa
 
 -   Remaking plots, annotating significance (p_adj \< 0.05)
 
