@@ -18,18 +18,18 @@ library(phyloseq)
 
 ### Formatting data for phyloseq object ###
 
-taxonomy <- read.delim("../datasets/qiime2_outputs/taxonomy.tsv",
+taxonomy <- read.delim("../../datasets/qiime2_outputs/taxonomy.tsv",
                        sep = "\t",
                        row.names = 1)
 
-tree <- read_tree("../datasets/qiime2_outputs/tree.nwk")
+tree <- read_tree("../../datasets/qiime2_outputs/tree.nwk")
 
-counts <- read.delim("../datasets/qiime2_outputs/feature-table.tsv",
+counts <- read.delim("../../datasets/qiime2_outputs/feature-table.tsv",
                      sep = "\t",
                      skip = 1,
                      row.names = 1)
 
-metadata <- read.delim("../datasets/corrected_ms_metadata.tsv",
+metadata <- read.delim("../../datasets/corrected_ms_metadata.tsv",
                        sep = "\t",
                        row.names = 1)
 
@@ -48,7 +48,7 @@ taxonomy_formatted <- taxonomy %>%
   select(-Confidence) %>%
   as.matrix()
 
-# write.csv(taxonomy_formatted, "../datasets/taxonomy_formatted.csv")
+# write.csv(taxonomy_formatted, "../../datasets/taxonomy_formatted.csv")
 
 ### Counts ###
 
@@ -63,7 +63,7 @@ counts_names_formatted <- counts_col_names %>%
 
 counts_formatted <- counts %>% `colnames<-`(counts_names_formatted) %>% as.matrix()
 
-# write.csv(counts_formatted, "../datasets/counts_formatted.csv")
+# write.csv(counts_formatted, "../../datasets/counts_formatted.csv")
 
 ### Metadata ###
 
@@ -85,7 +85,7 @@ metadata_formatted <- metadata %>% `rownames<-`(md_names_formatted) %>%
                             "diet_lactose_intolerance", 
                             "LI")))
 
-# write.csv(metadata_formatted, "../datasets/metadata_formatted.csv")
+# write.csv(metadata_formatted, "../../datasets/metadata_formatted.csv")
 ```
 
 ```{r Generating Phyloseq Object}
@@ -95,5 +95,5 @@ ps <- phyloseq(sample_data(metadata_formatted),
                tax_table(taxonomy_formatted),
                tree)
 
-# saveRDS(ps, "../datasets/ps_taxonomy.rds")
+# saveRDS(ps, "../../datasets/ps_taxonomy.rds")
 ```
