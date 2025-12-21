@@ -58,7 +58,7 @@ avg_modified$Phylum[avg_modified$OTU %in% to_change] = '<1%'
 plot_avg = avg_modified %>% 
   ggplot(aes(LI_status,Abundance,fill=Phylum)) +
   geom_col(position='stack') +
-  theme_classic(base_size=18) +
+  theme_classic(base_size=16) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   xlab(NULL)
 plot_avg
