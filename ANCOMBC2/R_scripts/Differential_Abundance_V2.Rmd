@@ -1,0 +1,387 @@
+---
+title: "A3_Differential_Abundance_V2"
+output: html_document
+---
+
+## Tasks Performed:
+
+-   metadata subsetting into Control and LI groups + any additional wrangling
+
+-   ANCOMBC on each group
+
+    -   Control: comparing HLI to HNDR
+
+    -   MS: comparing MSLI to MSNDR
+
+-   ANCOMBC between groups
+
+    -   MSNDR to HNDR
+
+    -   MSLI to HLI
+
+```{r Loading libraries + phyloseq}
+
+library(tidyverse)
+library(ANCOMBC)
+library(phyloseq)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+ps <- readRDS("../datasets/ps_taxonomy.rds")
+
+```
+
+## 
+
+## Part 1 - ANCOMBC2 Within Groups
+
+```{r Wrangling - Part 1}
+
+# Load in previously glommed ps object
+ps_glom <- readRDS("../datasets/ps_glom_genus.rds")
+
+
+# Subset for each group: NDR and MS
+ps_glom_control <- subset_samples(ps_glom, disease == "Control")
+ps_glom_ms <- subset_samples(ps_glom, disease == "MS")
+
+# Give the metadata new labels to make ANCOMBC2 easier
+sample_data(ps_glom_control)$Group <- with(sample_data(ps_glom_control),
+                                   ifelse(LI_status == "No_LI", "HNDR",
+                                          "HLI"))
+
+sample_data(ps_glom_ms)$Group <- with(sample_data(ps_glom_ms),
+                                   ifelse(LI_status == "No_LI", "MSNDR",
+                                          "MSLI"))
+
+# Convert Group column to factors and order them. HNDR and MSNDR should be first in their respective groups
+sample_data(ps_glom_control)$Group <- factor(sample_data(ps_glom_control)$Group,
+                                     levels = c("HNDR", "HLI"))
+
+sample_data(ps_glom_ms)$Group <- factor(sample_data(ps_glom_ms)$Group,
+                                     levels = c("MSNDR", "MSLI"))
+```
+
+```{r Performing ANCOMBC2 - Part 1}
+
+# Perform ANCOMBC2 for Controls
+control_out <- ancombc2(
+  data = ps_glom_control,
+  fix_formula = "Group",
+  p_adj_method = "BH",
+  prv_cut = 0.10,
+  group = "Group")
+
+
+# Perform ANCOMBC2 for MS
+ms_out <- ancombc2(
+  data = ps_glom_ms,
+  fix_formula = "Group",
+  p_adj_method = "BH",
+  prv_cut = 0.10,
+  group = "Group")
+
+
+# Save results as objects
+control_res <- control_out$res
+ms_res <- ms_out$res
+
+```
+
+```{r Preparing data for plotting - Part 1}
+
+# Adding genus names to res data
+ps_tax_control <- data.frame(ps_glom_control@tax_table)
+ps_tax_ms <- data.frame(ps_glom_ms@tax_table)
+
+tax_names_control <- data.frame(taxon = row.names(ps_tax_control),
+                                Genus = ps_tax_control$Genus)
+tax_names_ms <- data.frame(taxon = row.names(ps_tax_ms),
+                                Genus = ps_tax_ms$Genus)
+
+control_res_named <- control_res %>%
+  left_join(tax_names_control) %>%
+  mutate(Genus = ifelse(is.na(Genus), taxon, Genus))
+ms_res_named <- ms_res %>%
+  left_join(tax_names_ms) %>%
+  mutate(Genus = ifelse(is.na(Genus), taxon, Genus))
+
+
+# None of the observations in either group passed the diff_robust test. Instead, we will look at these taxa of interest (if they are present): 
+
+## Lactobacillus
+## Bifidobacterium
+## Holdemania
+## Lachnospiraceae
+## E. hallii
+## Ruminococcus gauvreauii
+
+control_res_filt <- control_res_named %>%
+  filter(str_detect(Genus, "Lactobacillus") == T |
+           str_detect(Genus, "Bifidobacterium") == T |
+           str_detect(Genus, "Holdemania") == T |
+           str_detect(Genus, "Lachnospiraceae") == T |
+           str_detect(Genus, "E. hallii") == T |
+           str_detect(Genus, "gauvreauii") == T)
+
+ms_res_filt <- ms_res_named %>%
+  filter(str_detect(Genus, "Lactobacillus") == T |
+           str_detect(Genus, "Bifidobacterium") == T |
+           str_detect(Genus, "Holdemania") == T |
+           str_detect(Genus, "Lachnospiraceae") == T |
+           str_detect(Genus, "E. hallii") == T |
+           str_detect(Genus, "gauvreauii") == T)
+
+# write_tsv(control_res_filt, "control_res_filt.tsv")
+# write_tsv(ms_res_filt, "ms_res_filt.tsv")
+```
+
+```{r Checkpoint}
+
+# Loads results for readjusting plots into being manuscript-ready (for when you really don't want to rerun the above code)
+
+# control_res_filt <- read.delim("control_res_filt.tsv")
+# ms_res_filt <- read.delim("ms_res_filt.tsv")
+```
+
+```{r Plotting - Part 1}
+
+# Selecting only columns containing lfc values, and rearranging results df for plotting
+filt_lfc_cols_control <- grep("^lfc_", names(control_res_filt), value = TRUE)
+filt_lfc_cols_ms <- grep("^lfc_", names(ms_res_filt), value = TRUE)
+
+
+# Pivoting longer to prepare for facet_wrap()
+# Cleaning up names
+control_lfc <- control_res_filt %>%
+  select(Genus, all_of(filt_lfc_cols_control)) %>%
+  pivot_longer(cols = all_of(filt_lfc_cols_control),
+               names_to = "Group",
+               values_to = "LFC") %>%
+  mutate(Group = case_when(str_detect(Group, "GroupHLI") == T ~ "HLI",
+                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)"),
+         Genus = str_replace(Genus, "g__", "")) %>% filter(str_detect(Group, "HLI") == T)
+
+ms_lfc <- ms_res_filt %>%
+  select(Genus, all_of(filt_lfc_cols_ms)) %>%
+  pivot_longer(cols = all_of(filt_lfc_cols_ms),
+               names_to = "Group",
+               values_to = "LFC") %>%
+  mutate(Group = case_when(str_detect(Group, "GroupMSLI") == T ~ "MSLI",
+                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)"),
+        Genus = str_replace(Genus, "g__", "")) %>% filter(str_detect(Group, "MSLI") == T)
+
+
+### Generating the plot(s) ###
+
+control_plot <- ggplot(control_lfc, 
+                       aes(x = reorder(Genus, LFC), 
+                           y = LFC, fill = LFC > 0,
+                           size = 10)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Log-Fold Change of Specific Genera for HLI Compared to HNDR",
+    x = "Genus",
+    y = "Log Fold Change"
+  ) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16))
+
+# ggsave("images/LFC - HLI vs. HNDR - V2.png",
+#        plot = control_plot,
+#        width = 12,
+#        height = 10)
+
+ms_plot <- ggplot(ms_lfc, 
+                       aes(x = reorder(Genus, LFC), 
+                           y = LFC, fill = LFC > 0)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Log-Fold Change of Specific Genera for MSLI Compared to MSNDR",
+    x = "Genus",
+    y = "Log Fold Change"
+  ) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16))
+
+# ggsave("images/LFC - MSLI vs MSNDR - V2.png",
+#        plot = ms_plot,
+#        width = 12,
+#        height = 10)
+```
+
+## Part 2 - ANCOMBC2 Between Groups
+
+```{r Wrangling - Part 2}
+
+
+# Subset for each group: No_LI and LI
+ps_glom_NDR <- subset_samples(ps_glom, LI_status == "No_LI")
+ps_glom_LI <- subset_samples(ps_glom, LI_status == "LI")
+
+# Give the metadata new labels to make ANCOMBC2 easier
+sample_data(ps_glom_NDR)$Group <- with(sample_data(ps_glom_NDR),
+                                   ifelse(disease == "Control", "HNDR",
+                                          "MSNDR"))
+
+sample_data(ps_glom_LI)$Group <- with(sample_data(ps_glom_LI),
+                                   ifelse(disease == "Control", "HLI",
+                                          "MSLI"))
+
+# Convert Group column to factors and order them. HNDR and LINDR should be first in their respective groups
+sample_data(ps_glom_NDR)$Group <- factor(sample_data(ps_glom_NDR)$Group,
+                                     levels = c("HNDR", "MSNDR"))
+
+sample_data(ps_glom_LI)$Group <- factor(sample_data(ps_glom_LI)$Group,
+                                     levels = c("HLI", "MSLI"))
+
+```
+
+```{r Performing ANCOMBC2 - Part 2}
+
+# Perform ANCOMBC2 for NDRs
+NDR_out <- ancombc2(
+  data = ps_glom_NDR,
+  fix_formula = "Group",
+  p_adj_method = "BH",
+  prv_cut = 0.10,
+  group = "Group")
+
+
+# Perform ANCOMBC2 for LI
+LI_out <- ancombc2(
+  data = ps_glom_LI,
+  fix_formula = "Group",
+  p_adj_method = "BH",
+  prv_cut = 0.10,
+  group = "Group")
+
+
+# Save results as objects
+NDR_res <- NDR_out$res
+LI_res <- LI_out$res
+
+
+```
+
+```{r Preparing data for plotting - Part 2}
+
+# Adding genus names to res data
+ps_tax_NDR <- data.frame(ps_glom_NDR@tax_table)
+ps_tax_LI <- data.frame(ps_glom_LI@tax_table)
+
+tax_names_NDR <- data.frame(taxon = row.names(ps_tax_NDR),
+                                Genus = ps_tax_NDR$Genus)
+tax_names_LI <- data.frame(taxon = row.names(ps_tax_LI),
+                                Genus = ps_tax_LI$Genus)
+
+NDR_res_named <- NDR_res %>%
+  left_join(tax_names_NDR) %>%
+  mutate(Genus = ifelse(is.na(Genus), taxon, Genus))
+LI_res_named <- LI_res %>%
+  left_join(tax_names_LI) %>%
+  mutate(Genus = ifelse(is.na(Genus), taxon, Genus))
+
+
+# None of the observations in either group passed the diff_robust test. Instead, we will look at these taxa of interest (if they are present): 
+
+## Lactobacillus
+## Bifidobacterium
+## Holdemania
+## Lachnospiraceae
+## E. hallii
+## Ruminococcus gauvreauii
+
+NDR_res_filt <- NDR_res_named %>%
+  filter(str_detect(Genus, "Lactobacillus") == T |
+           str_detect(Genus, "Bifidobacterium") == T |
+           str_detect(Genus, "Holdemania") == T |
+           str_detect(Genus, "Lachnospiraceae") == T |
+           str_detect(Genus, "E. hallii") == T |
+           str_detect(Genus, "gauvreauii") == T)
+
+LI_res_filt <- LI_res_named %>%
+  filter(str_detect(Genus, "Lactobacillus") == T |
+           str_detect(Genus, "Bifidobacterium") == T |
+           str_detect(Genus, "Holdemania") == T |
+           str_detect(Genus, "Lachnospiraceae") == T |
+           str_detect(Genus, "E. hallii") == T |
+           str_detect(Genus, "gauvreauii") == T)
+
+```
+
+```{r Plotting - Part 2}
+
+# Selecting only columns containing lfc values, and rearranging results df for plotting
+filt_lfc_cols_NDR <- grep("^lfc_", names(NDR_res_filt), value = TRUE)
+filt_lfc_cols_LI <- grep("^lfc_", names(LI_res_filt), value = TRUE)
+
+
+# Pivoting longer to prepare for facet_wrap()
+# Cleaning up names
+NDR_lfc <- NDR_res_filt %>%
+  select(Genus, all_of(filt_lfc_cols_NDR)) %>%
+  pivot_longer(cols = all_of(filt_lfc_cols_NDR),
+               names_to = "Group",
+               values_to = "LFC") %>%
+  mutate(Group = case_when(str_detect(Group, "GroupMSNDR") == T ~ "MSNDR",
+                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)")) %>% filter(str_detect(Group, "MSNDR") == T)
+
+LI_lfc <- LI_res_filt %>%
+  select(Genus, all_of(filt_lfc_cols_LI)) %>%
+  pivot_longer(cols = all_of(filt_lfc_cols_LI),
+               names_to = "Group",
+               values_to = "LFC") %>%
+  mutate(Group = case_when(str_detect(Group, "GroupMSLI") == T ~ "MSLI",
+                           str_detect(Group, "(Intercept)") == T ~ "(Intercept)")) %>% filter(str_detect(Group, "MSLI") == T)
+
+
+### Generating the plot(s) ###
+
+NDR_plot <- ggplot(NDR_lfc, 
+                       aes(x = reorder(Genus, LFC), 
+                           y = LFC, fill = LFC > 0)) +
+  geom_col() +
+  facet_wrap(~ Group, scales = "free_y") +
+  coord_flip() +
+  labs(
+    title = "Log-Fold Change of Specific Genera for MSNDR Compared to HNDR",
+    x = "Genus",
+    y = "Log Fold Change"
+  ) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+# ggsave("LFC - MSNDR vs. HNDR.png",
+#        plot = NDR_plot,
+#        width = 8,
+#        height = 7)
+
+LI_plot <- ggplot(LI_lfc, 
+                       aes(x = reorder(Genus, LFC), 
+                           y = LFC, fill = LFC > 0)) +
+  geom_col() +
+  facet_wrap(~ Group, scales = "free_y") +
+  coord_flip() +
+  labs(
+    title = "Log-Fold Change of Specific Genera for MSLI Compared to HLI",
+    x = "Genus",
+    y = "Log Fold Change"
+  ) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+# ggsave("LFC - MSLI vs HLI.png",
+#        plot = LI_plot,
+#        width = 8,
+#        height = 7)
+```
+
+![](images/clipboard-9133593.png)

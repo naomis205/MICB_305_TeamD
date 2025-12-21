@@ -1,0 +1,35 @@
+---
+title: "A3_Readjusted_pval"
+output: html_document
+---
+
+## Tasks Performed:
+
+-   Adjusting p-values post ANCOMBC2 (Differential_Abundance_V2.Rmd) for within-group comparisons only for *specific* taxa
+
+-   Remaking plots, annotating significance (p_adj \< 0.05)
+
+```{r Loading libraries and data}
+
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+control_res_filt <- read.delim("control_res_filt.tsv")
+ms_res_filt <- read.delim("ms_res_filt.tsv")
+```
+
+```{r p Readjustment}
+
+control_res_adj <- control_res_filt %>% mutate(new_padj = p.adjust(p_GroupHLI, 
+                                                method='BH'))
+
+ms_res_adj <- ms_res_filt %>% mutate(new_padj = p.adjust(p_GroupMSLI, 
+                                                method='BH'))
+
+```
+
+## Had to stop there...
+
+Upon checking the results post-adjustment, there was still no significance to be found in either group. Therefore, there is no point in generating new plots.

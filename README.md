@@ -42,63 +42,39 @@ editor_options:
 
     -   Figure 1. No significant difference in alpha diversity 
 
-        -   
+        -   a) Observed & Shannon healthy
 
-            a)  Observed & Shannon healthy
-
-        -   
-
-            b)  Observed & Shannon MS
+        -   b) Observed & Shannon MS
 
     -   Figure 2. No significant difference in beta diversity 
 
-        -   
+        -   a) Bray-Curtis healthy
 
-            a)  Bray-Curtis healthy
-
-        -   
-
-            b)  Bray-Curtis MS
+        -   b) Bray-Curtis MS
 
     -   Figure 3. Overview of microbiome data
 
-        -   
+        -   a) Taxa barplot healthy
 
-            a)  Taxa barplot healthy
-
-        -   
-
-            b)  Taxa barplot MS
+        -   b) Taxa barplot MS
 
     -   Figure 4. 
 
-        -   
+        -   a) Core microbiome healthy
 
-            a)  Core microbiome healthy
-
-        -   
-
-            b)  Core microbiome MS
+        -   b) Core microbiome MS
 
     -   Figure 5. No significant functional pathways
 
-        -   
+        -   a) PCA healthy
 
-            a)  PCA healthy
-
-        -   
-
-            b)  PCA control 
+        -   b) PCA control 
 
     -   Figure 6. 
 
-        -   
+        -   a) ANCOMBC healthy
 
-            a)  ANCOMBC healthy
-
-        -   
-
-            b)  ANCOMBC MS
+        -   b) ANCOMBC MS
 
 -   **Action items:**
 
@@ -120,6 +96,12 @@ editor_options:
 
 -   Go over Aim 2 analysis results
 
+-   Map out future analysis direction for Aim 3
+
+**Minutes:**
+
+-   Go over Aim 2 analysis results
+
     -   Taxonomic bar plot
 
     -   Alpha & beta diversity – no significance
@@ -133,42 +115,41 @@ editor_options:
 
     -   Lack of heatmap
 
--   Map out future analysis direction for Aim 3
+-   Notes on final manuscript:
 
-    -   **Action item (Yoshier):** Survey all unused metrics for alpha
-        and beta diversity for Aims 1 and 2 (e.g. Faith, observed, etc.)
+    -   Report non-significant results
 
-    -   **Action item (Naomi):** Perform differential abundance for
-        Lactobacillus and Bifidobacterium (due to association with LI)
+    -   Use Phylum grouped taxa bar plot
 
-        -   Perform both traditional & filtered differential abundance
+        -   Bifidobacterium – Actinomycetota
 
-            -   Filtered:
+        -   Lactobacillus – Bacillota
 
-                -   Run ANCOM to filter only for 2 genus
+    -   Discuss how results fits into grand scheme of previous
+        literature
 
-                -   No need to use adjusted p-value b/c picking out 2
-                    genus from past literature
+**Action items:**
 
-        -   Plot abundance across 4 groups (HNDR, HLI, MSNDR, MSLI)
+-   Yoshier: Survey all unused metrics for alpha and beta diversity for
+    Aims 1 and 2 (e.g. Faith, observed, etc.)
 
-    -   **Action item (Kaitlyn):** Work on draft PowerPoint by next
-        meeting
+-   Naomi: Perform differential abundance for Lactobacillus and
+    Bifidobacterium (due to association with LI)
 
-        -   Can organize by Aim
+    -   Perform both traditional & filtered differential abundance
 
-    -   **Final Paper**
+        -   Filtered:
 
-        -   Report non-significant results
+            -   Run ANCOM to filter only for 2 genus
 
-        -   Use Phylum grouped taxa bar plot
+            -   No need to use adjusted p-value b/c picking out 2 genus
+                from past literature
 
-            -   Bifidobacterium – Actinomycetota
+    -   Plot abundance across 4 groups (HNDR, HLI, MSNDR, MSLI)
 
-            -   Lactobacillus – Bacillota
+-   Kaitlyn: Work on draft PowerPoint by next meeting
 
-        -   Discuss how results fits into grand scheme of previous
-            literature
+    -   Can organize by Aim
 
 ## November 12, 2025
 
@@ -251,6 +232,10 @@ editor_options:
 
     -   Not all commments make sense :( grrrr
 
+**Action items:**
+
+-   Complete Aim 2 analysis
+
 ## November 5, 2025
 
 **Agenda:**
@@ -282,9 +267,17 @@ editor_options:
 
 ## October 29, 2025
 
-**Agenda:** - Review draft project proposal and high-level feedback
+**Agenda:**
 
-***Feedback on Draft Proposal***
+-   Review draft project proposal and high-level feedback
+
+-   ***Other Questions (see comments on Google Doc)***
+
+    -   Alpha/beta diversity past literature findings
+        individually/across disease + LI/no LI
+    -   Core microbiome (statistical analysis)
+
+**Minutes:**
 
 -   Introduction
     -   General:
@@ -321,11 +314,9 @@ editor_options:
     -   Generate rarefaction curve in QIIME2 (removed mitochondrial &
         chloroplast sequences, train classifier)
 
-***Other Questions (see comments on Google Doc)***
+**Action items:**
 
--   Alpha/beta diversity past literature findings individually/across
-    disease + LI/no LI
--   Core microbiome (statistical analysis)
+-   Revise project proposal by next week
 
 ## October 22, 2025
 
@@ -336,6 +327,8 @@ editor_options:
 -   Align aims with expected outcomes
 
 -   Improve understanding of expected outcomes
+
+**Minutes:**
 
 -   Research Question Feedback:
 
@@ -400,16 +393,23 @@ editor_options:
         important based on results from Aims 1 and 2
     -   Aim 1 and 2 changed to focus on diversity, composition, and
         function.
-    -   propose the types of analyses to do in Aims -\> will be
+    -   Propose the types of analyses to do in Aims -\> will be
         indicative of the aspects we're interested in
-    -   
+
+**Action items:**
+
+-   Write research proposal (see above Minutes)
 
 ## October 15, 2025
 
 **Agenda:**
 
--   Background reading and hypotheses formation discussion
-    -   Informative evidence type for dietary restrictions related to MS
+-   Discuss background reading
+
+-   Discuss hypothesis formation
+
+**Minutes:**
+
 -   MS Dataset
     -   Sample size (total \~ 900)
         -   filtered for MS and HC with lactose intolerance
@@ -421,38 +421,46 @@ editor_options:
         -   In HC, function of bacteria is eg. to digest lactose
         -   Then, compare the MS (LT) and HC (LT) individuals to see if
             this bacteria is further depleted/missing in MS individuals
-    -   Background research and hypothesis formation paths:
-        -   background research: lactose intolerance affects the gut
-            microbiome
-        -   background research: MS affects the gut microbiome
-        -   hypothesis: therefore, significance between LT and MS gut
-            microbiome diversity
-    -   Significance (proposal):
-        -   We see LT quite often, therefore, examining LT, could have
-            implications on other dietary restrictions
-        -   Implications include: lifestyles to accomodate for MS, what
-            considerations to make/lookout etc.
-        -   If LT results are different from no-LT in MS, and we know
-            Caucasians have more dairy in diet, therefore??
-        -   If cannot determine significance, just write 1-2 sentences
-            on why we are interested
-    -   Downstream analysis:
-        -   If overall no difference: calculate the percent of LT in HC
-            and MS populations, see if MS has a higher %, then suggest
-            for further study
--   Goals this week/next week:
-    -   Determine hypothesis
+-   Background research and hypothesis formation paths:
+    -   background research: lactose intolerance affects the gut
+        microbiome
+    -   background research: MS affects the gut microbiome
+    -   hypothesis: therefore, significance between LT and MS gut
+        microbiome diversity
+-   Significance (proposal):
+    -   We see LT quite often, therefore, examining LT, could have
+        implications on other dietary restrictions
+    -   Implications include: lifestyles to accomodate for MS, what
+        considerations to make/lookout etc.
+    -   If LT results are different from no-LT in MS, and we know
+        Caucasians have more dairy in diet, therefore??
+    -   If cannot determine significance, just write 1-2 sentences on
+        why we are interested
+-   Downstream analysis:
+    -   If overall no difference: calculate the percent of LT in HC and
+        MS populations, see if MS has a higher %, then suggest for
+        further study
 
-**Action Items**: - Write a detailed experimental aim: - What type of
-analysis will we do? - How does this analysis contribute to our
-hypothesis? - Importing the data and completing QIIME - **NOTE**:
-Proposal: Overall RQ, Hypothesis + justification of hypothesis
+**Action Items**:
+
+-   Determine hypothesis
+
+-   Write a detailed experimental aim:
+
+    -   What type of analysis will we do?
+
+    -   How does this analysis contribute to our hypothesis?
+
+-   Importing the data and completing QIIME
+
+    -   **NOTE**: Proposal: Overall RQ, Hypothesis + justification of
+        hypothesis
 
 ## October 8, 2025
 
 **Agenda:**
 
--   **Roundtable for Project Ideas**
+-   Roundtable for Project Ideas
     -   MS:
         -   **NOTE:** Processing will take a long time due to size of
             dataset
@@ -474,7 +482,7 @@ Proposal: Overall RQ, Hypothesis + justification of hypothesis
                 dataset .: would be difficult to find differences
         -   Comparison b/tw Yu and Wang gastric cancer studies
             -   Datasets ambiguous
--   **Final Project Decision:**
+-   Final Project Decision:
     -   MS dataset -\> download from server, NOT Canvas (\~900 sample
         size)
     -   **Research Project:** Dietary restriction (specifically lactose
@@ -491,35 +499,52 @@ Proposal: Overall RQ, Hypothesis + justification of hypothesis
 
 ## October 1, 2025
 
-Interest in MS, Parkinson's, and Gastic Cancer metadata - The MS dataset
-is large, so there’s lots to work with - MS has high variability - Lots
-of confounding variables to correct for (i.e. asthma) - Could look at
-symptoms of MS - Lots of UJEMI literature – check if there’s any
-literature on it so you don’t repeat what’s already been done – want
-good project – look at future directions, limitations for those
-papers. - Gastic Cancer has small metadata – not a lot of samples (311)
+**Agenda;**
 
-To do:
+-   Discuss initial research ideas
+
+**Minutes:**
+
+-   Interest in MS, Parkinson's, and Gastic Cancer metadata
+
+    -   MS:
+
+        -   Dataset is large, so there’s lots to work with
+
+        -   MS has high variability
+
+        -   Lots of confounding variables to correct for (i.e. asthma)
+
+        -   Could look at symptoms of MS
+
+        -   Lots of UJEMI literature – check if there’s any literature
+            on it so you don’t repeat what’s already been done – want
+            good project – look at future directions, limitations for
+            those papers.
+
+    -   Gastic Cancer:
+
+        -   Small metadata – not a lot of samples (311)
+
+**Action items:**
 
 -   Find two papers to support hypothesis based on research questions
     you have
 
--   Hypotheses can be upstream or downstream:
+    -   Hypotheses can be upstream or downstream:
 
--   Upstream: Why does it happen?
+        -   Upstream: Why does it happen?
 
--   Downstream: What’s the effect of this happening?
+        -   Downstream: What’s the effect of this happening?
 
--   Try to find relationships within data related to research questions
-    using indirect (explanatory) variables
+    -   Try to find relationships within data related to research
+        questions using indirect (explanatory) variables
 
--   Attempt to find evidence that supports both upstream and downstream
-    and form hypotheses based on it.
+    -   Attempt to find evidence that supports both upstream and
+        downstream and form hypotheses based on it.
 
--   Consider gaps in the field?
+    -   Consider gaps in the field?
 
--   Send any datasets of interest to the teaching team, by Friday.
+-   Send any datasets of interest to the teaching team by Friday
 
 -   By next week – commit to one or few datasets
-
--   Brainstorm for next week

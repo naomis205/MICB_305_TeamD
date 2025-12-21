@@ -1,0 +1,30 @@
+### Removing features with 5 or lower counts ###
+
+qiime feature-table filter-features \
+  --i-table table-no-mito-no-chloro.qza \
+  --p-min-frequency 5 \
+  --o-filtered-table feature-frequency-filtered-table.qza
+
+### Making a new directory + exporting data ###
+
+mkdir picrust2
+
+qiime tools export \
+   --input-path feature-frequency-filtered-table.qza \
+   --output-path picrust2
+
+qiime tools export \
+   --input-path rep-seqs.qza \
+   --output-path picrust2
+
+### Switching to PICRUSt2 environment ###
+
+conda deactivate
+conda activate picrust2
+
+### Running PICRUSt2 ###
+
+picrust2_pipeline.py \
+   -s picrust2/dna-sequences.fasta \
+   -i picrust2/feature-table.biom \
+   -o picrust_outputs
